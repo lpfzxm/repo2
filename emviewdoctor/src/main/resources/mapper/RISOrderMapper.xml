@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.RISOrderMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.RISOrderInfoVO">
+        <result column="rreid_examid" jdbcType="VARCHAR" property="rreidexamid"/>
+        <result column="rreid_hoscode" jdbcType="VARCHAR" property="BusinessFieldCode"/>
+        <result column="rreid_hosexamid" jdbcType="VARCHAR" property="RISRHosReportID"/>
+        <result column="risr_examdesc" jdbcType="VARCHAR" property="RISRExamDesc"/>
+        <result column="oeori_arcitmmastcode" jdbcType="VARCHAR" property="OEORIARCItmMastCode"/>
+        <result column="oeori_execdeptcode" jdbcType="VARCHAR" property="RISRReportDeptCode"/>
+        <result column="oeori_orderitemid" jdbcType="VARCHAR" property="OEORIOrderItemID"/>
+        <result column="oeori_hosorderid" jdbcType="VARCHAR" property="OEORIHosOrderItemID"/>
+    </resultMap>
+    <resultMap id="RisResultMap" type="com.dhcens.emviewdoctor.entity.VO.RISOrderInfoVO">
+        <result column="risr_examid" jdbcType="VARCHAR" property="risrexamid"/>
+        <result column="risr_reportid" jdbcType="VARCHAR" property="RISRReportID"/>
+        <result column="risr_reportdocdesc" jdbcType="VARCHAR" property="RISRReportDocDesc"/>
+        <result column="risr_method" jdbcType="VARCHAR" property="RISMethod"/>
+        <result column="risr_examdesc" jdbcType="VARCHAR" property="RISRExamDesc"/>
+        <result column="risr_diagdesc" jdbcType="VARCHAR" property="RISRDiagDesc"/>
+        <result column="risr_checkdocdesc" jdbcType="VARCHAR" property="RISRCheckDocDesc"/>
+        <result column="risr_checkdate" jdbcType="VARCHAR" property="RISRCheckDate"/>
+        <result column="risr_checktime" jdbcType="VARCHAR" property="RISRCheckTime"/>
+        <result column="risr_reportdate" jdbcType="VARCHAR" property="RISRReportDate"/>
+    </resultMap>
+    <resultMap id="RiscoutMap" type="com.dhcens.emviewdoctor.entity.VO.RisCountVO">
+        <result column="ctcc_desc" jdbcType="VARCHAR" property="desc"/>
+        <result column="numcount" jdbcType="VARCHAR" property="count"/>
+        <result column="ctcc_code" jdbcType="VARCHAR" property="code"/>
+    </resultMap>
+    <select id="selectRISOrderByCondition" resultMap="BaseResultMap">
+        SELECT
+        to_char(rel_risexamid.rreid_examid) as rreid_examid,
+        rreid_hoscode As rreid_hoscode,
+        c.oeori_orderitemid As oeori_orderitemid,
+        c.oeori_hosorderid,
+        c.oeori_arcitmmastcode,
+        c.oeori_execdeptcode,
+        rel_risexamid.rreid_hosexamid as rreid_hosexamid
+        from hdc_user.rel_risexamid
+        inner join HDC_USER.ris_order a on rel_risexamid.rreid_examid = a.riso_examid
+        inner join HDC_USER.pa_adm b on rel_risexamid.rreid_visitnumber = b.paadm_visitnumber
+        inner join HDC_USER.oe_orditem c on a.riso_orderitemid = c.oeori_orderitemid
+        left join HDC_USER.ct_arcitmmast d on c.oeori_arcitmmastcode = d.ctarcim_code
+        <where>
+            <trim prefixOverrides="and">
+                <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+                    and b.paadm_visitnumber in
+                    <foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="paramsobject.PATPatientID !=null and paramsobject.PATPatientID !=''">
+                    and b.paadm_patientid = #{paramsobject.PATPatientID}
+                </if>
+                <if test="paramsobject.RisReportCateCode !=null and paramsobject.RisReportCateCode !=''">
+                    and d.ctarcim_childcategory=#{paramsobject.RisReportCateCode}
+                </if>
+                <if test="paramsobject.RisReportItemDesc !=null and paramsobject.RisReportItemDesc!=''">
+                    and d.ctarcim_desc like '%' ||#{paramsobject.RisReportItemDesc,jdbcType=VARCHAR} ||'%'
+                </if>
+            </trim>
+        </where>
+    </select>
+    <select id="selectRISReportByCondition" resultMap="RisResultMap">
+        select to_char(risr_examid) as risr_examid,
+       to_char(risr_reportid) as risr_reportid,
+       risr_reportdocdesc,
+       risr_method,
+       risr_examdesc,
+       risr_diagdesc,
+        risr_reportdate,
+       risr_checkdocdesc,
+        to_char(risr_checkdate) as risr_checkdate,
+        to_char(risr_checktime,'HH24:MI:SS') as risr_checktime
+       from HDC_USER.ris_report
+       <where>
+           <if test="risrexamidList !=null and risrexamidList.size()>0">
+               risr_examid in
+               <foreach collection="risrexamidList" item="item" separator="," open="(" close=")">
+                   #{item}
+               </foreach>
+           </if>
+       </where>
+        order by risr_checkdate desc ,risr_checktime desc
+        limit 2000
+    </select>
+    <select id="selectRISCountByCondition" resultMap="RiscoutMap">
+        select t3.ctcc_desc, ctcc_code, count(*) as numcount
+        from hdc_user.ris_order t
+        left join HDC_USER.rel_risexamid t0 on t.riso_examid = t0.rreid_examid
+        left join HDC_USER.oe_orditem t1 on t.riso_orderitemid = t1.oeori_orderitemid
+        left join HDC_USER.ct_arcitmmast t2 on t1.oeori_arcitmmastcode = t2.ctarcim_code
+        left join HDC_USER.ct_childcategory t3 on t2.ctarcim_childcategory = t3.ctcc_code
+        left join HDC_USER.pa_adm b on t0.rreid_visitnumber = b.paadm_visitnumber
+        left join HDC_USER.ris_report e on t0.rreid_examid = e.risr_examid
+        <where>
+            <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+                and t0.rreid_visitnumber in
+                <foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID != ''">
+                and b.paadm_patientid=#{paramsobject.PATPatientID,jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by ctcc_desc, ctcc_code
+    </select>
+</mapper>

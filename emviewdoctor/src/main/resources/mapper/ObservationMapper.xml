@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.ObservationsMapper">
+	<resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.ObservationsVO">
+		<result column="pao_visitnumber" jdbcType="VARCHAR" property="paovisitnumber" />
+		<result column="pao_obseritemid" jdbcType="VARCHAR" property="paoobseritemid" />
+		<result column="pao_obsercode" jdbcType="VARCHAR" property="paoobsercode" />
+		<result column="pao_observalue" jdbcType="VARCHAR" property="paoobservalue" />
+		<result column="pao_obserupdatedate" jdbcType="VARCHAR" property="paoobserupdatedate" />
+		<result column="pao_obserupdatetime" jdbcType="VARCHAR" property="paoobserupdatetime" />
+		<result column="pao_obserupdateusercode" jdbcType="VARCHAR" property="paoobserupdateusercode" />
+		<result column="updatedate" jdbcType="VARCHAR" property="updatedate" />
+		<result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
+	</resultMap>
+	<select id="selectObservations" resultMap="BaseResultMap">
+		select
+		to_char(pa_observations.pao_visitnumber) as pao_visitnumber,
+		pao_obseritemid,
+		pao_obsercode,
+		pao_observalue,
+		to_char(pa_observations.pao_obserupdatedate) as pao_obserupdatedate,
+		to_char(pa_observations.pao_obserupdatetime,'HH24:MI:SS') as pao_obserupdatetime,
+		pao_obserupdateusercode,
+		to_char(pa_observations.updatedate) as updatedate,
+		to_char(pa_observations.updatetime,'HH24:MI:SS') as updatetime
+		from hdc_user.pa_observations pa_observations
+		inner join hdc_user.pa_adm pa_adm on pa_adm.paadm_visitnumber=pa_observations.pao_visitnumber
+		<where>
+			<trim prefixOverrides="and">
+				<if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID != ''">
+					and pa_adm.paadm_patientid=#{paramsobject.PATPatientID}
+				</if>
+				<if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+					and pa_observations.pao_visitnumber in
+					<foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator="," open="(" close=")">
+						#{item}
+					</foreach>
+				</if>
+				<if test="obserInfo.paoobsercode!= null and obserInfo.paoobsercode.size>0">
+					and pao_obsercode in
+					<foreach collection="obserInfo.paoobsercode" item="item" separator="," open="(" close=")">
+						#{item}
+					</foreach>
+				</if>
+
+			</trim>
+		</where>
+		order by pao_obserupdatedate desc ,pao_obserupdatetime desc
+	</select>
+
+</mapper>

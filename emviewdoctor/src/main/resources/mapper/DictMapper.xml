@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.DictMapper">
+    <resultMap id="DrugDictMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDictVO">
+      <collection property="EnterDeptData" resultMap="EnterDeptMap"/>
+        <collection property="CategoryData" resultMap="CategoryMap"/>
+        <collection property="ChildCategoryData" resultMap="ChildCategoryMap"/>
+        <collection property="PriorityData" resultMap="PriorityMap"/>
+    </resultMap>
+    <resultMap id="EnterDeptMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDictVO$EnterDeptDataBean">
+        <result column="oeori_enterdeptcode" jdbcType="VARCHAR" property="EnterDeptCode"/>
+        <result column="oeori_enterdeptdesc" jdbcType="VARCHAR" property="EnterDeptDesc"/>
+    </resultMap>
+    <resultMap id="CategoryMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDictVO$CategoryDataBean">
+        <result column="ctc_code" jdbcType="VARCHAR" property="CategoryCode"/>
+        <result column="ctc_desc" jdbcType="VARCHAR" property="CategoryDesc"/>
+    </resultMap>
+   <resultMap id="ChildCategoryMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDictVO$ChildCategoryDataBean">
+       <result column="ctc_code" jdbcType="VARCHAR" property="CategoryCode"/>
+       <result column="ctcc_code" jdbcType="VARCHAR" property="ChildCategoryCode"/>
+       <result column="ctcc_desc" jdbcType="VARCHAR" property="ChildCategoryDesc"/>
+   </resultMap>
+    <resultMap id="PriorityMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDictVO$PriorityDataBean">
+        <result column="oeori_prioritycode" jdbcType="VARCHAR" property="PriorityCode"/>
+    </resultMap>
+
+
+    <resultMap id="AdmDictMap" type="com.dhcens.emviewdoctor.entity.VO.AdmDictVO">
+        <collection property="PAADMAdmDeptList" resultMap="AdmDeptMap"/>
+        <collection property="PAADMAttendDocList" resultMap="AttendDocMap"/>
+        <collection property="PAADMEncounterTypeList" resultMap="EncounterTypeMap"/>
+    </resultMap>
+    <resultMap id="AdmDeptMap" type="com.dhcens.emviewdoctor.entity.VO.AdmDictVO$PAADMAdmDeptListBean">
+        <result column="paadm_admdeptcode" jdbcType="VARCHAR" property="PAADMAdmDeptCode"/>
+    </resultMap>
+    <resultMap id="AttendDocMap" type="com.dhcens.emviewdoctor.entity.VO.AdmDictVO$PAADMAttendDocListBean">
+        <result column="paadm_attenddoccode" jdbcType="VARCHAR" property="PAADMAttendDocCode"/>
+    </resultMap>
+    <resultMap id="EncounterTypeMap" type="com.dhcens.emviewdoctor.entity.VO.AdmDictVO$PAADMEncounterTypeListBean">
+        <result column="paadm_encountertype" jdbcType="VARCHAR" property="PAADMEncounterTypeCode"/>
+    </resultMap>
+<select id="selectDrugDictByCondition" resultMap="DrugDictMap">
+    select
+    ct_childcategory.ctcc_code,
+        ct_childcategory.ctcc_desc,
+         ct_category.ctc_code,
+         ct_category.ctc_desc,
+         oeori_prioritycode,
+         oeori_enterdeptcode
+        from hdc_user.oe_orditem oe_orditem
+        inner join hdc_user.oe_order or_order on or_order.oeord_orderid = oe_orditem.oeori_orderid
+        inner join hdc_user.pa_adm pa_adm on or_order.oeord_visitnumber = pa_adm.paadm_visitnumber
+        left join hdc_user.ct_arcitmmast ct_arcitmmast on ct_arcitmmast.ctarcim_code = oe_orditem.oeori_arcitmmastcode
+        left join hdc_user.ct_childcategory ct_childcategory on ct_childcategory.ctcc_code = ct_arcitmmast.ctarcim_childcategory
+        left join hdc_user.ct_category ct_category on ct_category.ctc_code = ct_childcategory.ctcc_category
+<where>
+    <trim prefixOverrides="and">
+        <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+            and pa_adm.paadm_patientid=#{paramsobject.PATPatientID}
+        </if>
+        <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size()>0">
+            and pa_adm.paadm_visitnumber in
+            <foreach collection="paramsobject.PatVisitNumberIndex"  item="item"  separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        and ct_category.ctc_code in ('01','02','03')
+    </trim>
+</where>
+</select>
+
+
+    <select id="selectOEordDictByCondition" resultMap="DrugDictMap">
+        select
+        ct_childcategory.ctcc_code,
+        ct_childcategory.ctcc_desc,
+        ct_category.ctc_code,
+        ct_category.ctc_desc,
+        oeori_prioritycode,
+        oeori_enterdeptcode
+        from hdc_user.oe_orditem oe_orditem
+        inner join hdc_user.oe_order or_order on or_order.oeord_orderid = oe_orditem.oeori_orderid
+        inner join hdc_user.pa_adm pa_adm on or_order.oeord_visitnumber = pa_adm.paadm_visitnumber
+        left join hdc_user.ct_arcitmmast ct_arcitmmast on ct_arcitmmast.ctarcim_code = oe_orditem.oeori_arcitmmastcode
+        left join hdc_user.ct_childcategory ct_childcategory on ct_childcategory.ctcc_code = ct_arcitmmast.ctarcim_childcategory
+        left join hdc_user.ct_category ct_category on ct_category.ctc_code = ct_childcategory.ctcc_category
+        <where>
+            <trim prefixOverrides="and">
+                <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+                    and pa_adm.paadm_patientid=#{paramsobject.PATPatientID}
+                </if>
+                <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size()>0">
+                    and pa_adm.paadm_visitnumber in
+                    <foreach collection="paramsobject.PatVisitNumberIndex"  item="item"  separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <select id="selectAdmDictByCondition" resultMap="AdmDictMap">
+        select paadm_admdeptcode,
+               paadm_attenddoccode,
+               paadm_encountertype
+               from hdc_user.pa_adm pa_adm
+               inner join hdc_user.rel_patient rel_patient on rel_patient.repat_patientid=pa_adm.paadm_patientid
+               <where>
+                  <trim prefixOverrides="and">
+                      <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+                          and pa_adm.paadm_patientid=#{paramsobject.PATPatientID}
+                      </if>
+                      <if test="paramsobject.HosPatientID != null and paramsobject.HosPatientID !=''  ">
+                          and rel_patient.repat_hospatientid=#{paramsobject.HosPatientID}
+                      </if>
+                  </trim>
+               </where>
+
+    </select>
+</mapper>

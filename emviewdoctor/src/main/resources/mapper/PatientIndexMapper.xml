@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.PatientIndexMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.PatientIndexVO">
+        <result column="paadm_starttime" jdbcType="VARCHAR" property="paadmStarttime"/>
+        <result column="papat_de_sexcode" jdbcType="VARCHAR" property="papatdeSexcode"/>
+        <result column="cts_desc" jdbcType="VARCHAR" property="ctsDesc"/>
+        <result column="ctet_desc" jdbcType="VARCHAR" property="ctetDesc"/>
+        <result column="ctd_desc" jdbcType="VARCHAR" property="ctdDesc"/>
+        <result column="repat_hospatientid" jdbcType="VARCHAR" property="repatHospatientid"/>
+        <result column="papat_de_name" jdbcType="VARCHAR" property="papatDeName"/>
+        <result column="papat_de_dob" jdbcType="VARCHAR" property="papatDeDob"/>
+        <result column="paadm_encountertype" jdbcType="VARCHAR" property="paadmEncountertype"/>
+        <result column="paadm_startdate" jdbcType="VARCHAR" property="paadmStartdate"/>
+        <result column="paadm_hosvisitnumber" jdbcType="VARCHAR" property="paadmHosvisitnumber"/>
+        <result column="patientid" jdbcType="VARCHAR" property="patientid"/>
+        <result column="paadm_visitnumber" jdbcType="VARCHAR" property="paadmVisitnumber"/>
+    </resultMap>
+    <resultMap id="PatpatientIdMap" type="java.lang.String">
+        <result column="repat_patientid" jdbcType="VARCHAR" property="patPatientId"/>
+    </resultMap>
+
+    <select id="selectAll" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from (
+        select paadm_starttime,
+        a.papat_de_sexcode,
+        e.cts_desc,
+        c.ctet_desc,
+        d.ctd_desc,
+        b.repat_hospatientid,
+        a.papat_de_name,
+        to_char(a.papat_de_dob) as papat_de_dob,
+        paadm_encountertype,
+        to_char(paadm_startdate) as paadm_startdate,
+        paadm_hosvisitnumber,
+        b.repat_patientid as patientid,
+        to_char(paadm_visitnumber) as paadm_visitnumber
+        from (select paadm_startdate,
+        paadm_starttime,
+        paadm_encountertype,
+        paadm_patientid,
+        paadm_admdeptcode,
+        paadm_hosvisitnumber,
+        paadm_visitnumber
+        from hdc_user.pa_adm) temp1
+        left join hdc_user.pa_patient a on temp1.paadm_patientid = a.papat_patientid
+        left join hdc_user.rel_patient b on temp1.paadm_patientid = b.repat_patientid
+        left join hdc_user.ct_encountertype c on temp1.paadm_encountertype = c.ctet_code
+        left join hdc_user.ct_dept d on temp1.paadm_admdeptcode = d.ctd_code
+        left join hdc_user.ct_sex e on a.papat_de_sexcode = e.cts_code
+        where 1=1
+        <if test="hosPatientId != null">
+            and
+            b.repat_hospatientid = #{hosPatientId,jdbcType=VARCHAR}
+        </if>
+        <if test="sexCode != null">
+            and a.papat_de_sexcode = #{sexCode,jdbcType=VARCHAR}
+        </if>
+        ) limit #{rows,jdbcType=VARCHAR} offset #{page,jdbcType=VARCHAR}
+
+    </select>
+
+    <select id="selectPatpatientId" parameterType="java.lang.String" resultMap="PatpatientIdMap">
+        select repat_patientid from hdc_user.rel_patient
+        <where>
+            repat_hospatientid=#{HosPatientID,jdbcType=VARCHAR}
+        </where>
+    </select>
+</mapper>

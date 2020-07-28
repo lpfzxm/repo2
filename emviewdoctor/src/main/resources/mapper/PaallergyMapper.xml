@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.PaallergyMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.PaallergyVO">
+        <result column="paall_allergyid" jdbcType="VARCHAR" property="paallallergyid"/>
+        <result column="paall_patientid" jdbcType="VARCHAR" property="paallpatientid"/>
+        <result column="paall_sourcedesc" jdbcType="VARCHAR" property="paallsourcedesc"/>
+        <result column="paall_categorycode" jdbcType="VARCHAR" property="paallcategorycode"/>
+        <result column="paall_reactiondesc" jdbcType="VARCHAR" property="paallreactiondesc"/>
+        <result column="paall_severitycode" jdbcType="VARCHAR" property="paallseveritycode"/>
+        <result column="paall_date" jdbcType="VARCHAR" property="paalldate"/>
+        <result column="paall_status" jdbcType="VARCHAR" property="paallstatus"/>
+        <result column="paall_updateusercode" jdbcType="VARCHAR" property="paallupdateusercode"/>
+        <result column="paall_updatedate" jdbcType="VARCHAR" property="paallupdatedate"/>
+        <result column="paall_updatetime"  jdbcType="VARCHAR" property="paallupdatetime"/>
+    </resultMap>
+    <select id="selectPaallergy" resultMap="BaseResultMap">
+    select
+        paall_allergyid,
+        paall_patientid,
+        paall_sourcedesc,
+        paall_categorycode,
+        paall_reactiondesc,
+        paall_severitycode,
+        to_char(paall_date) as paall_date,
+        paall_status,
+        paall_updateusercode,
+        to_char(paall_updatedate) as paall_updatedate,
+        to_char(paall_updatetime,'HH24:MI:SS') as paall_updatetime
+    from hdc_user.pa_allergy pa_allergy
+    <where>
+        <trim prefixOverrides="and">
+            <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''">
+                and pa_allergy.paall_patientid=#{paramsobject.PATPatientID}
+            </if>
+
+        </trim>
+    </where>
+        order by paall_updatedate desc,paall_updatetime desc
+    </select>
+
+</mapper>

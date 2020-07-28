@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.OrdexecMapper">
+	<resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.OrdexecVO">
+		<result column="oeore_orderitemid" jdbcType="VARCHAR" property="oeoreorderitemid"/>
+		<result column="oeore_execid" jdbcType="VARCHAR" property="oeoreexecid"/>
+		<result column="oeore_execstdate" jdbcType="VARCHAR" property="oeoreexecstdate"/>
+		<result column="oeore_execsttime" jdbcType="VARCHAR" property="oeoreexecsttime"/>
+		<result column="oeore_doseqty" jdbcType="VARCHAR" property="oeoredoseqty"/>
+		<result column="oeore_doseunitcode" jdbcType="VARCHAR" property="oeoredoseunitcode"/>
+		<result column="oeore_qtyadmin" jdbcType="VARCHAR" property="oeoreqtyadmin"/>
+		<result column="oeore_desc" jdbcType="VARCHAR" property="oeoredesc"/>
+		<result column="oeore_xdate" jdbcType="VARCHAR" property="oeorexdate"/>
+		<result column="oeore_xtime" jdbcType="VARCHAR" property="oeorextime"/>
+		<result column="oeore_execusercode" jdbcType="VARCHAR" property="oeoreexecusercode" />
+		<result column="oeore_dateexecuted" jdbcType="VARCHAR" property="oeoredateexecuted" />
+		<result column="oeore_timeexecuted" jdbcType="VARCHAR" property="oeoretimeexecuted" />
+		<result column="oeore_adminstatuscode" jdbcType="VARCHAR" property="oeoreadminstatuscode" />
+		<result column="oeore_requireexecdate" jdbcType="VARCHAR" property="oeorerequireexecdate" />
+		<result column="oeore_requireexectime" jdbcType="VARCHAR" property="oeorerequireexectime" />
+		<result column="oeore_execfinishdate" jdbcType="VARCHAR" property="oeoreexecfinishdate" />
+		<result column="oeore_execfinishtime" jdbcType="VARCHAR" property="oeoreexecfinishtime" />
+		<result column="updatedate" jdbcType="VARCHAR" property="updatedate" />
+		<result column="updatetime" jdbcType="VARCHAR" property="updatetime" />
+		<result column="oeore_hosexecid" jdbcType="VARCHAR" property="oeorehosexecid" />
+		<result column="oeore_hoscode" jdbcType="VARCHAR" property="oeorehoscode"/>
+	</resultMap>
+	<select id="selectOrdexecByCondition" resultMap="BaseResultMap">
+		select
+		oeore_orderitemid,
+		oeore_execid,
+		to_char(oe_ordexec.oeore_execstdate) as oeore_execstdate,
+		to_char(oe_ordexec.oeore_execsttime,'HH24:MI:SS') as oeore_execsttime,
+		oeore_doseqty,
+		oeore_doseunitcode,
+		oeore_qtyadmin,
+		oeore_desc,
+		to_char(oe_ordexec.oeore_xdate) as oeore_xdate,
+		to_char(oe_ordexec.oeore_xtime,'HH24:MI:SS') as oeore_xtime,
+		oeore_execusercode,
+		oeore_timeexecuted,
+		oeore_adminstatuscode,
+		to_char(oe_ordexec.oeore_requireexecdate) as oeore_requireexecdate,
+		to_char(oe_ordexec.oeore_requireexectime,'HH24:MI:SS') as oeore_requireexectime,
+		to_char(oe_ordexec.oeore_execfinishdate) as oeore_execfinishdate,
+		to_char(oe_ordexec.oeore_execfinishtime,'HH24:MI:SS') as oeore_execfinishtime,
+		to_char(oe_ordexec.updatedate) as updatedate,
+		to_char(oe_ordexec.updatetime,'HH24:MI:SS') as updatetime,
+		oeore_hosexecid,
+		oeore_hoscode
+		from hdc_user.oe_ordexec oe_ordexec
+		inner join hdc_user.oe_orditem oe_orditem on
+		oe_orditem.oeori_orderitemid=oe_ordexec.oeore_orderitemid
+		<where>
+			<trim prefixOverrides="and">
+				<if test="paramsobject.oeoreorderitemid!=null and paramsobject.oeoreorderitemid!=''">
+					oe_ordexec.oeore_orderitemid=#{paramsobject.oeoreorderitemid}
+				</if>
+				<if test="paramsobject.oeorihosorderid!=null and paramsobject.oeorihosorderid!=''">
+					and oe_orditem.oeori_hosorderid=#{paramsobject.oeorihosorderid}
+				</if>
+			</trim>
+		</where>
+	</select>
+</mapper>

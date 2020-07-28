@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.TimeLineAdmMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.TimeLineAdmVO">
+        <result column="paadm_patientid" jdbcType="VARCHAR" property="paadmHosPatientId"/>
+        <result column="paadm_hosvisitnumber" jdbcType="VARCHAR" property="paadmHosVisitNumber"/>
+        <result column="paadm_visitnumber" jdbcType="VARCHAR" property="paadmVisitNumber"/>
+        <result column="paadm_encountertype" jdbcType="VARCHAR" property="paadmEncounterTypeCode"/>
+        <result column="paadm_admdeptcode" jdbcType="VARCHAR" property="paadmAdmDeptCode"/>
+        <result column="paadm_admitdoccode" jdbcType="VARCHAR" property="paadmAdmitDocCode"/>
+        <result column="repat_hospatientid" jdbcType="VARCHAR" property="paadmHosPatientId"/>
+        <result column="paadm_startdate" jdbcType="VARCHAR" property="paadmStartDate"/>
+        <result column="paadm_starttime" jdbcType="VARCHAR" property="paadmStartTime"/>
+        <result column="paadm_enddate" jdbcType="VARCHAR" property="paadmEndDate"/>
+        <result column="paadm_endtime" jdbcType="VARCHAR" property="paadmEndTime"/>
+        <result column="paadm_attenddoccode" jdbcType="VARCHAR" property="paadmAttendDocCode"/>
+        <result column="paadm_admitreason" jdbcType="VARCHAR" property="paadmAdmitReason"/>
+        <result column="paadm_admdeptcode" jdbcType="VARCHAR" property="paadmAdmDeptCode"/>
+        <result column="paadm_disdeptcode" jdbcType="VARCHAR" property="paadmDisDeptCode"/>
+        <result column="paadm_status" jdbcType="VARCHAR" property="paadmStatusCode"/>
+        <result column="paadm_curdeptcode" jdbcType="VARCHAR" property="paadmCurDeptCode"/>
+        <result column="paadm_curwardcode" jdbcType="VARCHAR" property="paadmCurwardCode"/>
+        <result column="paadm_curroomcode" jdbcType="VARCHAR" property="paadmCurRoomCode"/>
+        <result column="paadm_curbedno" jdbcType="VARCHAR" property="paadmCurBedNo"/>
+    </resultMap>
+    <select id="selectTimeLineAdm" resultMap="BaseResultMap">
+        select paadm.paadm_patientid,
+        to_char(paadm.paadm_hosvisitnumber) as paadm_hosvisitnumber,
+        to_char(paadm.paadm_visitnumber) as paadm_visitnumber,
+        paadm.paadm_encountertype,
+        paadm.paadm_admdeptcode,
+        paadm.paadm_admitdoccode,
+        to_char(paadm.paadm_startdate) as paadm_startdate,
+        to_char(paadm.paadm_starttime,'HH24:MI:SS') as paadm_starttime,
+        to_char(paadm.paadm_enddate) as paadm_enddate,
+        to_char(paadm.paadm_endtime,'HH24:MI:SS') as paadm_endtime,
+        paadm.paadm_attenddoccode,
+        paadm.paadm_admitreason,
+        paadm.paadm_admdeptcode,
+        paadm.paadm_disdeptcode,
+        paadm.paadm_status,
+        paadm.paadm_curdeptcode,
+        paadm.paadm_curwardcode,
+        paadm.paadm_curroomcode,
+        paadm.paadm_curbedno,
+        relpatient.repat_hospatientid
+        from hdc_user.pa_adm paadm
+        inner join hdc_user.rel_patient relpatient on paadm.paadm_patientid = relpatient.repat_patientid
+        <where>
+            <trim prefixOverrides="and">
+                <if test="paramsobject.HosPatientID != null and paramsobject.HosPatientID!=''">
+                    and relpatient.repat_hospatientid=#{paramsobject.HosPatientID}
+                </if>
+                <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''">
+                    and paadm.paadm_patientid= #{paramsobject.PATPatientID}
+                </if>
+
+                <if test="paAdmInfo.PAADMAdmitDocCode !=null and paAdmInfo.PAADMAdmitDocCode.size() !=''">
+                    and paadm.paadm_attenddoccode in
+                    <foreach collection="paAdmInfo.PAADMAdmitDocCode" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+
+
+                <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+                    and paadm.paadm_visitnumber in
+                    <foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="paAdmInfo.PAADMEncounterTypeCode !=null and paAdmInfo.PAADMEncounterTypeCode.size()>0">
+                    and paadm.paadm_encountertype in
+                    <foreach collection="paAdmInfo.PAADMEncounterTypeCode" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+                    and paadm.paadm_visitnumber in
+                    <foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+
+                <if test="paAdmInfo.PAADMAdmDeptCode !=null and paAdmInfo.PAADMAdmDeptCode.size()>0">
+                    and  paadm.paadm_admdeptcode in
+                    <foreach collection="paAdmInfo.PAADMAdmDeptCode" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="paramsobject.PAAdmStartDate !=null and paramsobject.PAAdmStartDate !=''">
+                    and paadm.paadm_startdate <![CDATA[>=]]> #{paramsobject.PAAdmStartDate}
+                </if>
+                <if test="paramsobject.PAAdmEndDate !=null and paramsobject.PAAdmEndDate !=''">
+                    and paadm.paadm_startdate <![CDATA[<=]]> #{paramsobject.PAAdmEndDate}
+                </if>
+            </trim>
+        </where>
+        order by paadm.paadm_startdate  desc,paadm.paadm_starttime desc
+    </select>
+
+</mapper>

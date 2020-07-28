@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.EmrStatusLogMapper">
+	<resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.EmrStatusLogVO">
+		<result column="paadm_visitnumber" jdbcType="VARCHAR" property="paadmvisitnumber" />
+		<result column="papat_documentno" jdbcType="VARCHAR" property="papatdocumentno"/>
+		<result column="emr_statuscode" jdbcType="VARCHAR" property="emrstatuscode"/>
+		<result column="emr_transoutdeptcode" jdbcType="VARCHAR" property="emrtransoutdeptcode"/>
+		<result column="emr_transoutdatetime" jdbcType="VARCHAR" property="emrtransoutdatetime"/>
+		<result column="emr_transoutusercode" jdbcType="VARCHAR" property="emrtransoutusercode"/>
+		<result column="emr_transindeptcode" jdbcType="VARCHAR" property="emrtransindeptcode"/>
+		<result column="emr_transindatetime" jdbcType="VARCHAR" property="emrtransindatetime"/>
+		<result column="emr_transinusercode" jdbcType="VARCHAR" property="emrtransinusercode"/>
+		<result column="emr_transoutdeptdesc" jdbcType="VARCHAR" property="emrtransoutdeptdesc"/>
+		<result column="emr_transindeptdesc" jdbcType="VARCHAR" property="emrtransindeptdesc"/>
+	</resultMap>
+	<select id="selectDEmrStatusLogByCondition" resultMap="BaseResultMap">
+		select emr_statuslog.paadm_visitnumber,
+               papat_documentno,
+               emr_statuscode,
+               emr_transoutdeptcode,
+               to_char(emr_transoutdatetime) as emr_transoutdatetime,
+               emr_transoutusercode,
+               emr_transindeptcode,
+		       to_char(emr_transindatetime) as emr_transindatetime,
+               emr_transinusercode,
+               emr_transoutdeptdesc,
+               emr_transindeptdesc
+          from hdc_user.emr_statuslog emr_statuslog
+		left join hdc_user.pa_adm pa_adm on pa_adm.paadm_visitnumber=emr_statuslog.paadm_visitnumber
+		left join hdc_user.rel_patient rel_patient on rel_patient.repat_patientid=pa_adm.paadm_patientid
+          <where>
+	          <trim prefixOverrides="and">
+		          <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+			          and rel_patient.repat_patientid=#{paramsobject.PATPatientID}
+		          </if>
+		          <if test="paramsobject.HosPatientID != null and paramsobject.HosPatientID !=''  ">
+			          and rel_patient.repat_hospatientid=#{paramsobject.HosPatientID}
+		          </if>
+		          <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+			          and pa_adm.paadm_visitnumber in
+			          <foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator=","
+				          open="(" close=")">
+				          #{item}
+			          </foreach>
+		          </if>
+	          </trim>
+          </where>
+        order by emr_transindatetime desc
+	</select>
+
+
+</mapper>

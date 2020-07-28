@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.PatientInfoMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.PatientInfoVO">
+        <result column="repat_hoscode" jdbcType="VARCHAR" property="businessFieldCode"/>
+        <result column="papat_patientid" jdbcType="VARCHAR" property="patPatientId"/>
+        <result column="repat_hospatientid" jdbcType="VARCHAR" property="patHospPatientId"/>
+        <result column="papat_de_name" jdbcType="VARCHAR" property="patName"/>
+        <result column="papat_de_dob" jdbcType="VARCHAR" property="patDob"/>
+        <result column="papat_de_sexcode" jdbcType="VARCHAR" property="patSexCode"/>
+        <result column="papat_de_maritalstatuscode" jdbcType="VARCHAR" property="patMaritalStatusCode"/>
+        <result column="papat_de_countrycode" jdbcType="VARCHAR" property="patCountryCode"/>
+        <result column="papat_de_nationcode" jdbcType="VARCHAR" property="patNationCode"/>
+        <result column="papat_occupationcode" jdbcType="VARCHAR" property="patOccupationCode"/>
+        <result column="papat_telephone" jdbcType="VARCHAR" property="patTelephone"/>
+        <result column="papat_documentno" jdbcType="VARCHAR" property="papatDocumentNo"/>
+        <result column="papatid_no" jdbcType="VARCHAR" property="papatIdCard"/>
+    </resultMap>
+    <select id="selectPatientInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select pa_patient.papat_patientid,
+           pa_patient.papat_de_name,
+           to_char(pa_patient.papat_de_dob) as papat_de_dob,
+           pa_patient.papat_de_sexcode,
+           pa_patient.papat_de_maritalstatuscode,
+           pa_patient.papat_de_nationcode,
+           pa_patient.papat_de_countrycode,
+           pa_patient.papat_telephone,
+           pa_patient.papat_healthcardid,
+           pa_patient.papat_relationname,
+           pa_patient.papat_updateusercode,
+           pa_patient.papat_updatedate,
+           pa_patient.papat_updatetime,
+           pa_patient.papat_motherid,
+           pa_patient.papat_remarks,
+           pa_patient.papat_linkpatientid,
+           pa_patient.papat_occupationcode,
+           pa_patient.papat_workplacename,
+           pa_patient.papat_workplacetelnum,
+           pa_patient.papat_relationcode,
+           pa_patient.papat_relationaddressdesc,
+           pa_patient.papat_relationhousenum,
+           pa_patient.papat_relationvillage,
+           pa_patient.papat_relationcountryside,
+           pa_patient.papat_relationcounty,
+           pa_patient.papat_relationcity,
+           pa_patient.papat_relationprovince,
+           pa_patient.papat_relationpostalcode,
+           pa_patient.papat_patientpositioncode,
+           pa_patient.papat_documentno,
+           pa_patient.papat_relationphone,
+           rel_patient.repat_hospatientid,
+           rel_patient.repat_hoscode,
+           pa_identifier.papatid_no
+    from hdc_user.pa_patient pa_patient
+             inner join hdc_user.rel_patient rel_patient on rel_patient.repat_hospatientid = pa_patient.papat_patientid
+             left join hdc_user.pa_identifier pa_identifier on pa_patient.papat_patientid = pa_identifier.papatid_patientid
+    <where>
+        <trim prefixOverrides="and">
+               <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID != ''">
+                   and pa_patient.papat_patientid=#{paramsobject.PATPatientID}
+               </if>
+            <if test="paramsobject.HosPatientID != null and paramsobject.HosPatientID != ''">
+                and rel_patient.repat_hospatientid=#{paramsobject.HosPatientID}
+            </if>
+              and rel_patient.repat_hoscode='00001'
+        </trim>
+    </where>
+</select>
+</mapper>

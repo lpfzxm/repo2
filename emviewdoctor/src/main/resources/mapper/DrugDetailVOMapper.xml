@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.DrugDetailMapper">
+    <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.DrugDetailVO">
+        <result column="paadm_patientid" jdbcType="VARCHAR" property="PATPatientID"/>
+        <result column="paadm_visitnumber" jdbcType="VARCHAR" property="PAADMVisitNumber"/>
+        <result column="paadm_hosvisitnumber" jdbcType="VARCHAR" property="PAADMHosVisitNumber"/>
+        <result column="ctarcim_code" jdbcType="VARCHAR" property="OEORIARCItmMastCode"/>
+        <result column="ctarcim_desc" jdbcType="VARCHAR" property="OEORIARCItmMastDesc"/>
+        <result column="ctcc_desc" jdbcType="VARCHAR" property="OEORIChildCategory"/>
+        <result column="ctc_code" jdbcType="VARCHAR" property="OEORICategory"/>
+        <result column="oeori_orderitemid" jdbcType="VARCHAR" property="OEORIOrderItemID"/>
+        <result column="oeori_parentorderid" jdbcType="VARCHAR" property="OEORIParentOrderItemID"/>
+        <result column="oeori_prioritycode" jdbcType="VARCHAR" property="OEORIPriorityCode"/>
+        <result column="oeori_status" jdbcType="VARCHAR" property="OEORIStatusCode"/>
+        <result column="oeori_doseforms" jdbcType="VARCHAR" property="OEORIDoseFormsCode"/>
+        <result column="oeori_doseqty" jdbcType="VARCHAR" property="OEORIDoseQty"/>
+        <result column="oeori_doseunitcode" jdbcType="VARCHAR" property="OEORIDoseUnitCode"/>
+        <result column="oeori_freqcode" jdbcType="VARCHAR" property="OEORIFreqCode"/>
+        <result column="oeori_instrcode" jdbcType="VARCHAR" property="OEORIInstrCode"/>
+        <result column="oeori_durationcode" jdbcType="VARCHAR" property="OEORIDurationCode"/>
+        <result column="oeori_orderqty" jdbcType="VARCHAR" property="OEORIOrderQty"/>
+        <result column="oeori_resultstatus" jdbcType="VARCHAR" property="OEORIResultStatusCode"/>
+        <result column="oeori_remarks" jdbcType="VARCHAR" property="OEORIRemarks"/>
+        <result column="oeori_enterdoccode" jdbcType="VARCHAR" property="OEORIEnterDocCode"/>
+        <result column="oeori_enterdate" jdbcType="VARCHAR" property="OEORIEnterDate"/>
+        <result column="oeori_entertime" jdbcType="VARCHAR" property="OEORIEnterTime"/>
+        <result column="oeori_enterdeptcode" jdbcType="VARCHAR" property="OEORIEnterDeptCode"/>
+        <result column="oeori_execdeptcode" jdbcType="VARCHAR" property="OEORIExecDeptCode"/>
+        <result column="oeori_requireexecdate" jdbcType="VARCHAR" property="OEORIRequireexecDate"/>
+        <result column="oeori_requireexectime" jdbcType="VARCHAR" property="OEORIRequireexecTime"/>
+        <result column="oeori_stopdate" jdbcType="VARCHAR" property="OEORIStopDate"/>
+        <result column="oeori_stoptime" jdbcType="VARCHAR" property="OEORIStopTime"/>
+        <result column="oeori_stopdoccode" jdbcType="VARCHAR" property="OEORIStopDocCode"/>
+        <result column="oeori_isskintest" jdbcType="VARCHAR" property="OEORIIsSkinTest"/>
+        <result column="oeori_updatedate" jdbcType="VARCHAR" property="OEORIUpdateDate"/>
+        <result column="oeori_updatetime" jdbcType="VARCHAR" property="OEORIUpdateTime"/>
+        <result column="oeori_updateusercode" jdbcType="VARCHAR" property="OEORIUpdateUserCode"/>
+        <result column="oeori_prescno" jdbcType="VARCHAR" property="OEORIPrescNo"/>
+        <result column="updatedate" jdbcType="VARCHAR" property="Updatedate"/>
+        <result column="updatetime" jdbcType="VARCHAR" property="UpdateTime"/>
+        <result column="oeori_hosorderid" jdbcType="VARCHAR" property="OEORIHosOrderItemID"/>
+        <result column="oeori_seqno" jdbcType="VARCHAR" property="OEORISeqNo"/>
+    </resultMap>
+    <select id="selectDrugDetailByCondition" resultMap="BaseResultMap">
+        select pa_adm.paadm_patientid,
+        to_char(pa_adm.paadm_visitnumber) as paadm_visitnumber,
+        to_char(pa_adm.paadm_hosvisitnumber) as paadm_hosvisitnumber,
+        ct_arcitmmast.ctarcim_code,
+        ct_arcitmmast.ctarcim_desc,
+        ct_childcategory.ctcc_code,
+        ct_childcategory.ctcc_desc,
+        ct_category.ctc_code,
+        ct_category.ctc_desc,
+        oeori_orderid,
+        oeori_orderchildid,
+        oeori_orderitemid,
+        oeori_parentorderid,
+        oeori_prioritycode,
+        oeori_status,
+        oeori_doseforms,
+        oeori_doseqty,
+        oeori_doseunitcode,
+        oeori_freqcode,
+        oeori_instrcode,
+        oeori_durationcode,
+        oeori_orderqty,
+        oeori_resultstatus,
+        oeori_remarks,
+        oeori_enterdoccode,
+        to_char(oeori_enterdate) as oeori_enterdate,
+        to_char(oeori_entertime,'HH24:MI:SS') as oeori_entertime,
+        oeori_enterdeptcode,
+        oeori_execdeptcode,
+        to_char(oeori_requireexecdate) as oeori_requireexecdate,
+        oeori_requireexectime,
+        to_char(oeori_stopdate) as oeori_stopdate,
+        to_char(oeori_stoptime,'HH24:MI:SS') as oeori_stoptime,
+        oeori_stopdoccode,
+        oeori_isskintest,
+        to_char(oeori_updatedate) as oeori_updatedate,
+        to_char(oeori_updatetime,'HH24:MI:SS') as oeori_updatetime,
+        oeori_updateusercode,
+        oeori_prescno,
+        to_char(oe_orditem.updatedate) as updatedate,
+        to_char(oe_orditem.updatetime,'HH24:MI:SS') as updatetime,
+        oeori_alias,
+        oeori_hosorderid,
+        oeori_hoscode,
+        oeori_seqno,
+        oeori_fillerno
+        from hdc_user.oe_orditem oe_orditem
+        inner join hdc_user.oe_order or_order on or_order.oeord_orderid = oe_orditem.oeori_orderid
+        inner join hdc_user.pa_adm pa_adm on or_order.oeord_visitnumber = pa_adm.paadm_visitnumber
+        left join hdc_user.ct_arcitmmast ct_arcitmmast on ct_arcitmmast.ctarcim_code = oe_orditem.oeori_arcitmmastcode
+        left join hdc_user.ct_childcategory ct_childcategory
+        on ct_childcategory.ctcc_code = ct_arcitmmast.ctarcim_childcategory
+        left join hdc_user.ct_category ct_category on ct_category.ctc_code = ct_childcategory.ctcc_category
+        <where>
+            <trim prefixOverrides="and">
+                <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+                    and pa_adm.paadm_patientid=#{paramsobject.PATPatientID}
+                </if>
+                <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size()>0">
+                    and pa_adm.paadm_visitnumber in
+                    <foreach collection="paramsobject.PatVisitNumberIndex"  item="item"  separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="oeoriItemInfo.OEORIARCItmMastDesc != null and oeoriItemInfo.OEORIARCItmMastDesc !=''">
+
+                    and ct_arcitmmast.ctarcim_desc like '%' ||#{oeoriItemInfo.OEORIARCItmMastDesc,jdbcType=VARCHAR} ||'%'
+                </if>
+                <if test="oeoriItemInfo.CategoryData !=null and oeoriItemInfo.CategoryData.size()>0">
+                    and ct_category.ctc_code in
+                    <foreach collection="oeoriItemInfo.CategoryData" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+
+                <if test="oeoriItemInfo.ChildCategoryData != null and oeoriItemInfo.ChildCategoryData.size()>0">
+                    and ct_childcategory.ctcc_code in
+                    <foreach collection="oeoriItemInfo.ChildCategoryData" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="oeoriItemInfo.PriorityData != null and oeoriItemInfo.PriorityData.size()>0">
+                    and oeori_prioritycode in
+                    <foreach collection="oeoriItemInfo.PriorityData" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="oeoriItemInfo.EnterDeptData != null and oeoriItemInfo.EnterDeptData.size()>0">
+                    and oeori_enterdeptcode in
+                    <foreach collection="oeoriItemInfo.EnterDeptData" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="oeoriItemInfo.OEORIEnterDate != null and oeoriItemInfo.OEORIEnterDate !=''">
+                    and oeori_enterdate = #{oeoriItemInfo.OEORIEnterDate}
+                </if>
+                and ct_category.ctc_code in ('01','02','03')
+
+            </trim>
+        </where>
+        order by oeori_enterdate  desc,oeori_entertime desc
+    </select>
+
+</mapper>

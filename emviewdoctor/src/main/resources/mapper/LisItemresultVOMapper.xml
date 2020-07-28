@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.LisItemresultVOMapper">
+  <resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.LisItemresultVO">
+    <id column="lisir_rowid" jdbcType="INTEGER" property="lisirRowid" />
+    <result column="lisir_reportid" jdbcType="INTEGER" property="lisirReportid" />
+    <result column="lisir_itemcode" jdbcType="VARCHAR" property="lisirItemcode" />
+    <result column="lisir_result" jdbcType="VARCHAR" property="lisirResult" />
+    <result column="lisir_uint" jdbcType="VARCHAR" property="lisirUint" />
+    <result column="lisir_textresult" jdbcType="VARCHAR" property="lisirTextresult" />
+    <result column="lisir_extraresult" jdbcType="VARCHAR" property="lisirExtraresult" />
+    <result column="lisir_resultexplain" jdbcType="VARCHAR" property="lisirResultexplain" />
+    <result column="lisir_abnormalflags" jdbcType="VARCHAR" property="lisirAbnormalflags" />
+    <result column="lisir_ranges" jdbcType="VARCHAR" property="lisirRanges" />
+    <result column="lisir_testmethod" jdbcType="VARCHAR" property="lisirTestmethod" />
+    <result column="lisir_testmachine" jdbcType="VARCHAR" property="lisirTestmachine" />
+    <result column="lisir_testusercode" jdbcType="VARCHAR" property="lisirTestusercode" />
+    <result column="lisir_showseq" jdbcType="INTEGER" property="lisirShowseq" />
+    <result column="lisir_testdate" jdbcType="VARCHAR" property="lisirTestdate" />
+    <result column="lisir_testtime" jdbcType="VARCHAR" property="lisirTesttime" />
+    <result column="lisir_count" jdbcType="VARCHAR" property="lisirCount" />
+    <result column="lisir_rule" jdbcType="VARCHAR" property="lisirRule" />
+    <result column="lisir_remark" jdbcType="VARCHAR" property="lisirRemark" />
+    <result column="lisir_patientid" jdbcType="VARCHAR" property="lisirPatientid" />
+    <result column="lisir_testuserdesc" jdbcType="VARCHAR" property="lisirTestuserdesc" />
+    <result column="lisir_intercode" jdbcType="VARCHAR" property="lisirIntercode" />
+    <result column="lisir_itemdesc" jdbcType="VARCHAR" property="lisirItemdesc" />
+    <result column="lisrr_ismcroorganism" jdbcType="VARCHAR" property="lisrrIsmcroorganism" />
+      <result column="lisrr_visitnumber" jdbcType="VARCHAR" property="lisrrVisitnumber" />
+
+  </resultMap>
+  <select id="selectLisItemresult" resultMap="BaseResultMap">
+   select    lisir_rowid,
+      lisir_reportid,
+      lisir_itemcode,
+      lisir_result,
+      lisir_uint,
+      lisir_textresult,
+      lisir_extraresult,
+      lisir_resultexplain,
+      lisir_abnormalflags,
+      lisir_ranges,
+      lisir_testmethod,
+      lisir_testmachine,
+      lisir_testusercode,
+      lisir_showseq,
+      lisir_testdate,
+      lisir_testtime,
+      lisir_count,
+      lisir_rule,
+      lisir_remark,
+      lisir_patientid,
+      lisir_testuserdesc,
+      lisir_intercode,
+      lisir_itemdesc,
+      lisrr_visitnumber,
+      lis_reportresult.lisrr_ismcroorganism
+      from hdc_user.lis_itemresult lis_itemresult
+      inner join hdc_user.lis_reportresult lis_reportresult
+      on lis_itemresult.lisir_reportid = lis_reportresult.lisrr_reportid
+    <where>
+      <trim prefixOverrides="and">
+        <if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID != ''">
+            and lis_reportresult.lisrr_patientid=#{paramsobject.PATPatientID}
+        </if>
+        <if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size() != 0">
+          and lis_reportresult.lisrr_visitnumber in
+            <foreach collection="paramsobject.PatVisitNumberIndex"  item="item"  separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="paramsobject.itemCode != null and paramsobject.itemCode.size() != 0">
+          and lis_itemresult.lisir_itemcode in
+          <foreach collection="paramsobject.itemCode" item="item" separator="," open="(" close=")">
+            #{item}
+          </foreach>
+        </if>
+      </trim>
+    </where>
+    order by lisir_testdate desc
+  </select>
+</mapper>

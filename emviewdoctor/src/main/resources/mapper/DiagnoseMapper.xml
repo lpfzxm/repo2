@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dhcens.emviewdoctor.mapper.DiagnoseMapper">
+	<resultMap id="BaseResultMap" type="com.dhcens.emviewdoctor.entity.VO.DiagnoseVO">
+		<result column="paadm_hosvisitnumber" jdbcType="VARCHAR" property="PAADMHosVisitNumber" />
+		<result column="paadm_visitnumber" jdbcType="VARCHAR" property="PAADMVisitNumber" />
+		<result column="pad_diagcategory" jdbcType="VARCHAR" property="PADDiagCategoryCode" />
+		<result column="pad_diagcode" jdbcType="VARCHAR" property="PADDiagCode" />
+		<result column="pad_diagdesc" jdbcType="VARCHAR" property="PADDiagDesc" />
+		<result column="pad_diagdate" jdbcType="VARCHAR" property="PADDiagDate" />
+		<result column="pad_diagtime" jdbcType="VARCHAR" property="PADDiagTime" />
+		<result column="pad_updateusercode" jdbcType="VARCHAR" property="PADDiagDocCode" />
+		<result column="pad_diagrowid" jdbcType="VARCHAR" property="PADDiagRowId" />
+		<result column="pad_diagseq" jdbcType="VARCHAR" property="PADDiagSeq" />
+		<result column="pad_diagtype" jdbcType="VARCHAR" property="PADDiagTypeCode" />
+		<result column="pad_hosdiagrowid" jdbcType="VARCHAR" property="PADHosDiagRowId" />
+		<result column="pad_remarks" jdbcType="VARCHAR" property="PADRemarks" />
+		<result column="pad_updateusercode" jdbcType="VARCHAR" property="PADSSUserCode" />
+		<result column="repat_hospatientid" jdbcType="VARCHAR" property="PATHosPatientID" />
+		<result column="repat_patientid" jdbcType="VARCHAR" property="PATPatientID" />
+	</resultMap>
+	<select id="selectDiagnoseByCondition" resultMap="BaseResultMap">
+		select
+		to_char(pa_adm.paadm_hosvisitnumber) as paadm_hosvisitnumber,
+		to_char(pa_adm.paadm_visitnumber) as paadm_visitnumber,
+		pad_diagcategory,
+		pad_diagcode,
+		pad_diagdesc,
+		to_char(pa_diagnose.pad_diagdate) as pad_diagdate,
+		to_char(pa_diagnose.pad_diagtime,'HH24:MI:SS') as pad_diagtime,
+		pad_updateusercode,
+		pad_diagrowid,
+		pad_diagseq,
+		pad_diagtype,
+		pad_hosdiagrowid,
+		pad_remarks,
+		pad_updateusercode,
+		rel_patient.repat_hospatientid,
+		rel_patient.repat_patientid
+		from hdc_user.pa_diagnose pa_diagnose
+		left join hdc_user.pa_adm pa_adm on pa_adm.paadm_visitnumber=pa_diagnose.pad_visitnumber
+		left join hdc_user.rel_patient rel_patient on
+		rel_patient.repat_patientid=pa_adm.paadm_patientid
+		<where>
+			<trim prefixOverrides="and">
+				<if test="paramsobject.PATPatientID != null and paramsobject.PATPatientID !=''  ">
+					and rel_patient.repat_patientid=#{paramsobject.PATPatientID}
+				</if>
+				<if test="paramsobject.HosPatientID != null and paramsobject.HosPatientID !=''  ">
+					and rel_patient.repat_hospatientid=#{paramsobject.HosPatientID}
+				</if>
+				<if test="paramsobject.PatVisitNumberIndex != null and paramsobject.PatVisitNumberIndex.size>0">
+					and pa_adm.paadm_visitnumber in
+					<foreach collection="paramsobject.PatVisitNumberIndex" item="item" separator=","
+						open="(" close=")">
+						#{item}
+					</foreach>
+				</if>
+				<if test="padDiagInfo.PADDiagDesc !=null and padDiagInfo.PADDiagDesc !=''">
+					and pad_diagdesc like '%' ||#{padDiagInfo.PADDiagDesc,jdbcType=VARCHAR} ||'%'
+				</if>
+				<if test="padDiagInfo.PADDiagDate !=null and padDiagInfo.PADDiagDate!=''">
+					and pa_diagnose.pad_diagdate <![CDATA[=]]> #{padDiagInfo.PADDiagDate}
+				</if>
+			</trim>
+		</where>
+		order by pad_diagdate desc,pad_diagtime desc
+	</select>
+
+</mapper>
